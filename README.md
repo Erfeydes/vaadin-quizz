@@ -1,72 +1,68 @@
-# Project Base for Vaadin and Spring Boot
+# Découverte de Vaadin
 
-This is an example project that can be used as a starting point to create your own Vaadin application with Spring Boot.
-It contains all the necessary configuration and some placeholder files to get you started.
+Vaadin est un framework Java permettant de créer facilement des PWA (Progressive Web App).
 
+## Installation
 
-## Running the Application
-There are two ways to run the application :  using `mvn spring-boot:run` or by running the `Application` class directly from your IDE.
+Nous vous recommandons d'utiliser soit Eclipse ou Intellij. Ces IDE ont accès à des plugins facilitant la compilation et le développement de Vaadin.
 
-You can use any IDE of your preference,but we suggest Eclipse or Intellij IDEA.
-Below are the configuration details to start the project using a `spring-boot:run` command. Both Eclipse and Intellij IDEA are covered.
+### Eclipse 
 
-#### Eclipse
-- Right click on a project folder and select `Run As` --> `Maven build..` . After that a configuration window is opened.
-- In the window set the value of the **Goals** field to `spring-boot:run` 
-- You can optionally select `Skip tests` checkbox
-- All the other settings can be left to default
+Il faut installer le plugin *Vaadin Plug-in for Eclipse* ***(et seulement celui-ci !)***.
 
-Once configurations are set clicking `Run` will start the application
+Pour ce faire, il faut aller dans l'onglet *Help* -> *Install New Software* -> *Add*. Entrez Vaadin dans le nom et https://vaadin.com/eclipse dans la "location", cliquez sur *Add* et sélectionnez **Vaadin Plug-in for Eclipse**.
 
-#### Intellij IDEA
-- On the right side of the window, select Maven --> Plugins--> `spring-boot` --> `spring-boot:run` goal
-- Optionally, you can disable tests by clicking on a `Skip Tests mode` blue button.
+Il suffira ensuite de "run" la classe Application
 
-Clicking on the green run button will start the application.
+### Intellij
 
-After the application has started, you can view your it at http://localhost:8080/ in your browser.
+Pas besoin de plug-in en particulier, l'utilisation de maven suffit.
 
+## TP - Quizz App
 
-If you want to run the application locally in the production mode, use `spring-boot:run -Pproduction` command instead.
-### Running Integration Tests
+Dans l'application, vous pourrez retrouver l'ensemble de la partie Live Coding de la présentation.
 
-Integration tests are implemented using [Vaadin TestBench](https://vaadin.com/testbench). The tests take a few minutes to run and are therefore included in a separate Maven profile. We recommend running tests with a production build to minimize the chance of development time toolchains affecting test stability. To run the tests using Google Chrome, execute
+Votre but, lors de ce TP, est de continuer l'application pour avoir une partie Quizz. Il sera possible de sélectionner le nombre de questions via une pop-up sur l'accueil de l'application.
+Nous aurons ensuite une page dédiée avec la question et les réponses (sous forme de boutons ou autre).
+Il existe deux types de questions : True/False ou QCM.
+Il sera ensuite possible de visualiser son score à la fin de l'ensemble des questions.
 
-`mvn verify -Pit,production`
+L'ensemble des fonctionnalités pour récupérer les questions sont déjà fournies. Vous pouvez vous concentrer uniquement sur la partie "front" de l'application.
 
-and make sure you have a valid TestBench license installed.
+Les questions sont récupérées depuis cette API : https://opentdb.com/api_config.php
 
-Profile `it` adds the following parameters to run integration tests:
-```sh
--Dwebdriver.chrome.driver=path_to_driver
--Dcom.vaadin.testbench.Parameters.runLocally=chrome
-```
+Nous avons pris le parti de vous laisser entièrement libre sur ce TP.
+Vous êtes totalement libre de faire ressembler votre application comme vous le souhaitez !
+Cela explique pourquoi ce TP est très peu guidé. A la fin, vous pourrez comparer votre application avec celle des autres pour voir l'ensemble des possibilités de Vaadin et de votre créativité.
+Nous vous indiquons tout de même l'ensemble des tâches à réaliser (avec l'ordre recommandé) pour avoir une application fonctionnelle.
 
-If you would like to run a separate test make sure you have added these parameters to VM Options of JUnit run configuration
+**Surtout n'hésitez pas à perdre du temps à explorer les possibilités de Vaadin via la documentation (bien fournie sur le site officiel). Avec une plus grande curiosité, votre application sera plus originale !**
 
-## Project overview
+Nous vous laissons quand même des conseils pour développer facilement sur Vaadin !
 
-Project follow the Maven's [standard directory layout structure](https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html):
-- Under the `srs/main/java` are located Application sources
-   - `Application.java` is a runnable Java application class and a starting point
-   - `GreetService.java` is a  Spring service class
-   - `MainView.java` is a default view and entry point of the application
-- Under the `srs/test` are located test files
-- `src/main/resources` contains configuration files and static resources
-- The `frontend` directory in the root folder contains client-side dependencies and resource files
-   - All CSS styles used by the application are located under the root directory `frontend/styles`    
-   - Templates would be stored under the `frontend/src`
+## Étapes à suivre
 
+- Pop-up pour renseigner le nombre de questions et navigation vers la page de quizz
+- Affichage des questions et des réponses
+- Gestion des réponses utilisateurs
+- Système pour le passage à la question suivante après la réponse utilisateur
+- Afficher le score de l'utilisateur à la fin des questions
 
-## More Information and Next Steps
+## Note sur les fichiers 
 
-- Vaadin Basics [https://vaadin.com/docs](https://vaadin.com/docs)
-- More components at [https://vaadin.com/components](https://vaadin.com/components) and [https://vaadin.com/directory](https://vaadin.com/directory)
-- Download this and other examples at [https://vaadin.com/start](https://vaadin.com/start)
-- Using Vaadin and Spring [https://vaadin.com/docs/v14/flow/spring/tutorial-spring-basic.html](https://vaadin.com/docs/v14/flow/spring/tutorial-spring-basic.html) article
-- Join discussion and ask a question at [https://vaadin.com/forum](https://vaadin.com/forum)
+Pour rappel vous trouvez dans ce projet les ressources du live coding. Vous pouvez donc vous en inspirer. 
 
+C'est dans le MainView que vous allez retrouver la page pour le quizz. Le HomeView est la page d'accueil dans laquelle
+vous devez faire la première étape. 
 
-## Notes
+Le QuestionService sera le service qui va nous permettre de récupérer les questions. La méthode getQuestion va vous 
+retourner un objet du type ReponseApi, nous vous conseillons de consulter le contenu de cet objet afin de l'exploiter.
 
-If you run application from a command line, remember to prepend a `mvn` to the command.
+## Conseils pour développer facilement et rapidement
+
+- Google est votre ami, vous pouvez trouver l'ensemble des "widgets/composants" et leurs fonctionnalités sur Internet.
+- La documentation officielle de Vaadin est votre meilleur ami, vous pouvez visualiser l'ensemble des possibilités : https://vaadin.com/components
+- L'autocomplétion des IDE vous permet de trouver plus facilement les fonctions à utiliser. 
+Par exemple, vous souhaitez gérer la largeur d'un élément, il suffit de faire <nom_element>. , taper width et vous avez l'autocomplétion qui indique l'ensemble des fonctions gérant la largeur de l'élément.
+- Nous sommes là pour vous aider, n'hésitez surtout pas à nous interpeller !
+
