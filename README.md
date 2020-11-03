@@ -5,6 +5,7 @@ Vaadin est un framework Java permettant de créer facilement des PWA (Progressiv
 ## Installation
 
 Nous vous recommandons d'utiliser soit Eclipse ou Intellij. Ces IDE ont accès à des plugins facilitant la compilation et le développement de Vaadin.
+Peu importe l'IDE choisis nous vous conseillons de faire un mvn clean install et un npm install à la récupération du projet.
 
 ### Eclipse 
 
@@ -16,7 +17,7 @@ Il suffira ensuite de "run" la classe Application
 
 ### Intellij
 
-Pas besoin de plug-in en particulier, l'utilisation de maven suffit.
+Pas besoin de plug-in en particulier, l'utilisation de maven suffit. 
 
 ## TP - Quizz App
 
