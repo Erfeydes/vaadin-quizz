@@ -74,16 +74,10 @@ public class HomeView extends VerticalLayout {
 				"https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Universit%C3%A9_de_Lille_logo.svg/1200px-Universit%C3%A9_de_Lille_logo.svg.png",
 				"Université de Lille");
 		univLogo.setWidth("300px");
-		Image miageLogo = new Image(
-				"https://lh3.googleusercontent.com/proxy/NPSjQjtNQDHueFLzmygj2mytF3Zp_TA00kJbaX4yOj3JDZz__-ve92j7aZuMu_SNVj5P3YLTkS_Vu31SajiszkER8M1JXUBwmUmhEVyj1z3cAwDT2kmUXE163pxzbKQuxus0",
-				"MIAGE");
-		miageLogo.setWidth("300px");
-		miageLogo.setHeight("70px");
 		Image vaadinLogo = new Image("https://cdn2.hubspot.net/hubfs/1840687/Pages/trademark/vaadin-logo-full.svg",
 				"Vaadin");
 		vaadinLogo.setWidth("300px");
-		images.add(univLogo, vaadinLogo, miageLogo);
-		images.setVerticalComponentAlignment(Alignment.CENTER, miageLogo);
+		images.add(univLogo, vaadinLogo);
 		return images;
 	}
 
