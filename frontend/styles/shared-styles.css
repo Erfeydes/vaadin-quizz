@@ -13,6 +13,17 @@
 	width: 300px;
 }
 
+.question {
+	background-color: rgba(146, 146, 146, 0.1);
+	font-size: 1.2em;
+	padding: 10px;
+	border-radius: 10px;
+}
+
+.difficulty {
+	font-style: italic;
+}
+
 .goodAnswer{
 	background-color: #4BC827;
 }

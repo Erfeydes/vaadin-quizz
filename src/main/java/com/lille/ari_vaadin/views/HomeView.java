@@ -2,6 +2,10 @@ package com.lille.ari_vaadin.views;
 
 import java.util.List;
 
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.textfield.NumberField;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lille.ari_vaadin.models.Question;
@@ -52,11 +56,14 @@ public class HomeView extends VerticalLayout {
 
 		Button buttonQuizz = new Button("Quizz");
 		buttonQuizz.addClickListener(e -> startQuizz().open());
-		menu.addAndExpand(buttonQuizz);
+		//menu.addAndExpand(buttonQuizz);
+		buttonQuizz.addThemeVariants(ButtonVariant.LUMO_LARGE);
+		buttonQuizz.setClassName("buttonResponse");
+		menu.add(buttonQuizz);
 
-		Button buttonCocktail = new Button("Random coktail");
-		buttonCocktail.addClickListener(e -> buttonCocktail.getUI().ifPresent(ui -> ui.navigate("cocktail")));
-		menu.addAndExpand(buttonCocktail);
+		//Button buttonCocktail = new Button("Random coktail");
+		//buttonCocktail.addClickListener(e -> buttonCocktail.getUI().ifPresent(ui -> ui.navigate("cocktail")));
+		//menu.addAndExpand(buttonCocktail);
 
 		HorizontalLayout images = imageBanner();
 		add(images, menu);
@@ -87,9 +94,28 @@ public class HomeView extends VerticalLayout {
 	 * @return a dialog
 	 */
 	public Dialog startQuizz() {
-		// TODO
-		// Return a dialog to choose the number of questions
-		return null;
+		VerticalLayout layout = new VerticalLayout();
+		Text text = new Text("How many questions do you want?");
+		NumberField questionsNumber = new NumberField();
+		questionsNumber.setHasControls(true);
+		questionsNumber.setStep(1);
+		questionsNumber.setMin(1);
+		Dialog dialog = new Dialog();
+		Button button = new Button("Submit");
+		button.addClickListener(event -> {
+			if (questionsNumber.getValue() == null || questionsNumber.getValue() <= 0) {
+				Notification notification = new Notification("You have to choose a number of questions", 3000, Notification.Position.TOP_CENTER);
+				notification.open();
+			} else {
+				this.questions = this.questionService.getQuestion((int)Math.round(questionsNumber.getValue())).getResults();
+				button.getUI().ifPresent(ui -> ui.navigate("quizz"));
+				dialog.close();
+			}
+		});
+		layout.add(text, questionsNumber, button);
+		layout.setAlignItems(Alignment.CENTER);
+		dialog.add(layout);
+		return dialog;
 	}
 
 }

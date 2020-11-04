@@ -1,5 +1,13 @@
 package com.lille.ari_vaadin.views;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lille.ari_vaadin.models.Question;
@@ -8,6 +16,9 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Quizz page
  */
@@ -15,6 +26,10 @@ import com.vaadin.flow.router.Route;
 @CssImport("./styles/shared-styles.css")
 @CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field")
 public class MainView extends VerticalLayout {
+	private int index = 0;
+	private int correct = 0;
+	private boolean end = false;
+	private VerticalLayout layout;
 
 	/**
 	 * Choose a Vaadin view if the questions are been generated or no Build the
@@ -35,17 +50,30 @@ public class MainView extends VerticalLayout {
 	 * Construct a view if the questions are'nt been generated
 	 */
 	public void goToHomePage() {
-		// TODO
-		// Return to the home page
+		Button button = new Button("Go back to Homepage");
+		button.addClickListener(e -> button.getUI().ifPresent(ui -> ui.navigate("")));
+		add(button);
+		setAlignItems(Alignment.CENTER);
 	}
 
 	/**
 	 * Construct a view if the questions are been generated
 	 */
 	public void loadPage() {
-		// TODO
-		// display score if all question are been answered
-		// display question and potential answer if questions are not answered yet
+		if (index == HomeView.questions.size()) {
+			displayScore();
+		} else {
+			layout = new VerticalLayout();
+			Span question = new Span(StringEscapeUtils.unescapeHtml4(HomeView.questions.get(index).getQuestion()));
+			question.addClassName("question");
+			Span difficulty = new Span("Difficulty: " + HomeView.questions.get(index).getDifficulty());
+			difficulty.addClassName("difficulty");
+			layout.add(question, difficulty, responses(HomeView.questions.get(index)));
+			layout.setAlignItems(Alignment.CENTER);
+			setSizeFull();
+			addClassName("centered-content");
+			add(layout);
+		}
 	}
 
 	/**
@@ -55,11 +83,55 @@ public class MainView extends VerticalLayout {
 	 * @return vertical layout contains only buttons
 	 */
 	public VerticalLayout responses(Question question) {
-		// TODO
-		// 2 types of questions : true/false or MCQ (QCM)
-		// 2 buttons for true and false or 4 buttons for MCQ
-		// You are free to display the buttons are you want
-		return null;
+		VerticalLayout answers = new VerticalLayout();
+
+		if (question.getType().equals("boolean")) { //two questions
+			HorizontalLayout horizontal = new HorizontalLayout();
+			Button trueBtn = new Button("True", new Icon(VaadinIcon.CHECK), event -> answer("True", question));
+			Button falseBtn = new Button("False", new Icon(VaadinIcon.CLOSE), event -> answer("False", question));
+
+			//add colooor
+			trueBtn.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+			trueBtn.addThemeVariants(ButtonVariant.LUMO_LARGE);
+			trueBtn.setClassName("buttonResponse");
+			falseBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
+			falseBtn.addThemeVariants(ButtonVariant.LUMO_LARGE);
+			falseBtn.setClassName("buttonResponse");
+
+			horizontal.add(trueBtn, falseBtn);
+			answers.add(horizontal);
+		} else { //four questions
+			List<String> propositions = question.getIncorrect_answers();
+			propositions.add(question.getCorrect_answer());
+
+			Collections.shuffle(propositions); //the correct answer won't be the last one every time
+
+			Button first = new Button(StringEscapeUtils.unescapeHtml4(propositions.get(0)), new Icon(VaadinIcon.QUESTION_CIRCLE_O), event -> answer(propositions.get(0), question));
+			first.setClassName("buttonResponse");
+			first.addThemeVariants(ButtonVariant.LUMO_LARGE);
+			first.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+			Button second = new Button(StringEscapeUtils.unescapeHtml4(propositions.get(1)), new Icon(VaadinIcon.QUESTION_CIRCLE_O), event -> answer(propositions.get(1), question));
+			second.setClassName("buttonResponse");
+			second.addThemeVariants(ButtonVariant.LUMO_LARGE);
+			second.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+			Button third = new Button(StringEscapeUtils.unescapeHtml4(propositions.get(2)), new Icon(VaadinIcon.QUESTION_CIRCLE_O), event -> answer(propositions.get(2), question));
+			third.setClassName("buttonResponse");
+			third.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+			third.addThemeVariants(ButtonVariant.LUMO_LARGE);
+			Button fourth = new Button(StringEscapeUtils.unescapeHtml4(propositions.get(3)), new Icon(VaadinIcon.QUESTION_CIRCLE_O), event -> answer(propositions.get(3), question));
+			fourth.setClassName("buttonResponse");
+			fourth.addThemeVariants(ButtonVariant.LUMO_LARGE);
+			fourth.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+
+			HorizontalLayout firstBtn = new HorizontalLayout();
+			firstBtn.add(first, second);
+			HorizontalLayout secondBtn = new HorizontalLayout();
+			secondBtn.add(third, fourth);
+			answers.add(firstBtn, secondBtn);
+		}
+
+		answers.setAlignItems(Alignment.CENTER);
+		return answers;
 	}
 
 	/**
@@ -73,8 +145,18 @@ public class MainView extends VerticalLayout {
 	 * @param currentQuestion the current question
 	 */
 	public void answer(String answer, Question currentQuestion) {
-		// TODO
-		// Handle the user answer
+		if (end) return;
+		boolean isCorrect = answer.equals(currentQuestion.getCorrect_answer());
+		if (isCorrect) {
+			addClassName("goodAnswer");
+			this.correct++;
+		} else {
+			addClassName("badAnswer");
+			Notification notification = new Notification("The correct answer is " + StringEscapeUtils.unescapeHtml4(currentQuestion.getCorrect_answer()), 2000, Notification.Position.TOP_CENTER);
+			notification.open();
+		}
+		nextQuestion();
+		end = true;
 	}
 
 	/**
@@ -82,16 +164,30 @@ public class MainView extends VerticalLayout {
 	 * next question
 	 */
 	public void nextQuestion() {
-		// TODO
-		// Handle the next question
+		Button button = new Button("Next", new Icon(VaadinIcon.ARROW_RIGHT), event -> {
+			removeClassNames("goodAnswer", "badAnswer");
+			this.index++;
+			end = false;
+			removeAll();
+			loadPage();
+		});
+		button.setIconAfterText(true);
+		button.addThemeVariants(ButtonVariant.LUMO_LARGE);
+		button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+		layout.add(button);
+		add(layout);
 	}
 
 	/**
 	 * Display the score
 	 */
 	public void displayScore() {
-		// TODO
-		// Display score
+		Span score = new Span("Your score: " + correct + "/" + HomeView.questions.size());
+		Button button = new Button("Go back to Homepage");
+		button.addClickListener(e -> button.getUI().ifPresent(ui -> ui.navigate("")));
+		button.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+		add(score, button);
+		setAlignItems(Alignment.CENTER);
 	}
 
 }
